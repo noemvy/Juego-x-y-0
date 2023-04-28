@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tablero de Juego X y O</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .parent-board {
+            padding-left: 30%;
+            padding-right: 30%;
+            padding-top: 8%;
+        }
+
+        /* Estilos para el tablero */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            background-color: #D3E5FC;
+            padding: 10px;
+            border: 5px solid #A4CAFF;
+            border-radius: 5px;
+        }
+
+        /* Estilos para las celdas */
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            font-weight: bold;
+            background-color: #BFE6FF;
+            border: 3px solid #A4CAFF;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #FFFFFF;
+            transition: all 0.3s ease-in-out;
+            height: 100px;
+            /* Altura de las celdas */
+        }
+
+        /* Estilos para las celdas cuando se les hace hover */
+        .cell:hover {
+            background-color: #64B5F6;
+            color: #FFFFFF;
+            transform: scale(1.1);
+        }
+
+        /* Estilos para las celdas seleccionadas */
+        .cell.selected {
+            background-color: #1976D2;
+            color: #FFFFFF;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="parent-board">
+        <center>
+            <h1>Juego de X - 0</h1>
+        </center>
+        <div class="board">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+     // Obtener las celdas del tablero
+     const cells = document.querySelectorAll('.cell');
+
+// Variables de estado
+let playerTurn = true; // Es el turno del jugador
+let gameOver = false; // El juego no ha terminado
+let board = ['', '', '', '', '', '', '', '', '']; // Representación del tablero en un arreglo
+
+// Función para dibujar el contenido de una celda
+function drawCellContent(cell, content) {
+    cell.textContent = content;
+}
+
+// Función para determinar si se ha ganado la partida
+function checkWin(player) {
+    const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Filas
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columnas
+        [0, 4, 8], [2, 4, 6] // Diagonales
+    ];
+
+    // Verificar si alguna de las combinaciones ganadoras pertenece al jugador actual
+    return winningCombinations.some(combination => {
+        return combination.every(index => {
+            return board[index] === player;
+        });
+    });
+}
+
+// Función para jugar contra la máquina
+function playComputer() {
+    // Escoger una celda aleatoria para jugar
+    let index;
+    do {
+        index = Math.floor(Math.random() * 9);
+    } while (board[index]);
+
+    // Marcar la celda con el contenido de la máquina y actualizar el tablero
+    drawCellContent(cells[index], 'O');
+    board[index] = 'O';
+
+    // Verificar si la máquina ha ganado
+    if (checkWin('O')) {
+        gameOver = true;
+        alert('¡La máquina ha ganado!');
+    } else if (!board.includes('')) {
+        // Verificar si se ha empatado la partida
+        gameOver = true;
+        alert('¡Ha habido un empate!');
+    } else {
+        // Es el turno del jugador
+        playerTurn = true;
+    }
+}
+
+// Función para jugar una celda
+function playCell(cell, index) {
+    // Si la celda ya ha sido jugada o el juego ha terminado, no hacer nada
+    if (!playerTurn || gameOver || board[index]) {
+        return;
+    }
+
+    // Marcar la celda con el contenido del jugador y actualizar el tablero
+    drawCellContent(cell, 'X');
+    board[index] = 'X';
+
+    // Verificar si el jugador ha ganado
+    if (checkWin('X')) {
+        gameOver = true;
+        alert('¡Has ganado!');
+    } else if (!board.includes('')) {
+        // Verificar si se ha empatado la partida
+        gameOver = true;
+        alert('¡Ha habido un empate!');
+    } else {
+        // Es el turno de la máquina
+        playerTurn = false;
+        setTimeout(playComputer, 500); // Esperar medio segundo antes de jugar la máquina
+    }
+}
+
+// Agregar evento de clic a cada celda
+//cells.forEach((cell, index) => {
+    //cell.addEventListener('click', () => playCell(cell, index));
+//);
+for (let i = 0; i < cells.length; i++) {
+  const cell = cells[i];
+  cell.addEventListener('click', () => playCell(cell, i));
+}
+</script>
